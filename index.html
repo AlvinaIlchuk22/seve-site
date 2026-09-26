@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SÈVE — Aloe Skincare</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@400;500;600&display=swap');
+  :root{
+    --bg:#ffffff; --cream:#f3f1ea; --mint:#dcece1; --mint2:#eaf4ee; --sage:#9db8a6;
+    --ink:#1b291f; --green:#2f5d3a; --leaf:#3f7d52; --deep:#1f3f2a; --muted:#63756a; --line:rgba(27,41,31,.12);
+    --serif:"Playfair Display",Georgia,serif; --sans:"Inter",Helvetica,Arial,sans-serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:var(--sans);color:var(--ink);background:var(--bg);overflow-x:hidden;-webkit-font-smoothing:antialiased}
+  a{color:inherit;text-decoration:none}
+  img{max-width:100%;display:block}
+  .wrap{max-width:1240px;margin:0 auto;padding:0 40px}
+  section{position:relative}
+  .eyebrow{font-size:11px;letter-spacing:.34em;text-transform:uppercase;color:var(--leaf);font-weight:600}
+  h1,h2,h3{font-family:var(--serif);font-weight:500;color:var(--ink);line-height:1.02}
+  .reveal{opacity:0;transform:translateY(28px)}
+  .btn{display:inline-flex;align-items:center;gap:9px;font-size:12px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;
+    padding:15px 30px;border-radius:40px;cursor:pointer;transition:.35s;border:1px solid transparent}
+  .btn.solid{background:var(--green);color:#fff}
+  .btn.solid:hover{background:var(--deep);transform:translateY(-2px)}
+  .btn.ghost{border-color:var(--line);color:var(--ink)}
+  .btn.ghost:hover{border-color:var(--green);color:var(--green)}
+
+  /* ===== announcement + header ===== */
+  .topbar{position:relative;z-index:61;background:var(--deep);color:#dfeee4;font-size:11px;letter-spacing:.18em;text-transform:uppercase;text-align:center;padding:12px 20px}
+  header{position:sticky;top:0;left:0;right:0;z-index:60;transition:background .4s,box-shadow .4s,padding .4s;padding:22px 0}
+  header .wrap{display:grid;grid-template-columns:1fr auto 1fr;align-items:center}
+  header.scrolled{background:rgba(255,255,255,.92);backdrop-filter:blur(12px);box-shadow:0 1px 0 var(--line);padding:14px 0}
+  .nav-l,.nav-r{display:flex;gap:30px;align-items:center;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink)}
+  .nav-r{justify-content:flex-end}
+  .nav-l a,.nav-r a{position:relative;transition:color .3s}
+  .nav-l a::after{content:"";position:absolute;left:0;bottom:-5px;width:100%;height:1px;background:var(--green);transform:scaleX(0);transform-origin:left;transition:transform .35s}
+  .nav-l a:hover::after{transform:scaleX(1)}
+  .brand{font-family:var(--serif);font-size:26px;letter-spacing:.32em;font-weight:600;text-align:center;padding-left:.32em}
+  .bag{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);border-radius:30px;padding:8px 15px;transition:.3s}
+  .bag:hover{border-color:var(--green);color:var(--green)}
+  .bag b{background:var(--green);color:#fff;border-radius:50%;width:18px;height:18px;display:grid;place-items:center;font-size:10px;font-weight:600}
+
+  /* ===== hero (interactive product stage) ===== */
+  .leaf{position:absolute;z-index:0;pointer-events:none;filter:drop-shadow(0 24px 40px rgba(47,93,58,.22))}
+  .hero{position:relative;min-height:100vh;overflow:hidden;
+    background:radial-gradient(78% 68% at 50% 42%,#eef6f0 0%,#f6faf6 58%,#ffffff 100%)}
+  .ghostword{position:absolute;left:50%;top:38%;transform:translate(-50%,-50%);z-index:0;
+    font-family:var(--serif);font-weight:600;font-size:clamp(110px,26vw,420px);letter-spacing:-.02em;
+    color:rgba(47,93,58,.08);white-space:nowrap;pointer-events:none;user-select:none;line-height:1}
+  .dew{position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none}
+  .stage{position:absolute;inset:0;z-index:2}
+  /* outer .pos elements handle centering + mouse parallax; inner imgs are free for GSAP */
+  .pos{position:absolute;pointer-events:none;will-change:transform}
+  .pos img{display:block;width:100%}
+  .glow{position:absolute;left:50%;top:40%;width:min(720px,88vw);aspect-ratio:1;z-index:0;
+    transform:translate(-50%,-50%) translate(var(--px,0px),var(--py,0px));
+    background:radial-gradient(circle,#e8f4ec 0%,rgba(199,226,209,.5) 42%,rgba(255,255,255,0) 70%)}
+  .smear-pos{left:50%;top:41%;width:min(720px,92vw);z-index:2;
+    transform:translate(-50%,-50%) translate(var(--px,0px),var(--py,0px))}
+  .smear-pos img{opacity:.42;transform:rotate(-7deg);filter:drop-shadow(0 26px 34px rgba(47,93,58,.12))}
+  .leaf-pos{left:50%;top:56%;width:min(660px,86vw);z-index:4;transform:translate(-50%,-50%) translate(var(--px,0px),var(--py,0px))}
+  .leaf-pos img{filter:drop-shadow(0 22px 26px rgba(47,93,58,.24))}
+  .leaf-pos{pointer-events:none}
+  .leaf-vid{width:100%;display:block}
+  .jar-pos{left:50%;top:37%;width:min(370px,50vw);z-index:5;
+    transform:translate(-50%,-50%) translate(var(--px,0px),var(--py,0px))}
+  .jar-pos img{filter:drop-shadow(0 40px 46px rgba(31,63,42,.32))}
+  .aloel-pos{left:-55px;bottom:-70px;width:min(440px,44vw);z-index:4;transform:translate(var(--px,0px),var(--py,0px))}
+  .aloel-pos img{filter:drop-shadow(0 26px 40px rgba(47,93,58,.24))}
+  .aloer-pos{right:-70px;bottom:-80px;width:min(410px,42vw);z-index:3;transform:translate(var(--px,0px),var(--py,0px)) scaleX(-1)}
+  .aloer-pos img{filter:drop-shadow(0 26px 40px rgba(47,93,58,.22))}
+  .hero-scrim{position:absolute;left:0;right:0;bottom:0;height:42%;z-index:6;pointer-events:none;
+    background:linear-gradient(to top,rgba(246,250,246,.97) 16%,rgba(246,250,246,.72) 44%,rgba(246,250,246,0) 100%)}
+  .hero-lead{position:absolute;left:0;right:0;bottom:6%;z-index:7}
+  .hero-lead .wrap{display:flex;flex-direction:column;align-items:center;text-align:center}
+  .hero .eyebrow{margin-bottom:16px}
+  .hero-h1{font-family:var(--serif);font-weight:500;font-size:clamp(34px,5vw,66px);line-height:1.03;letter-spacing:-.02em;color:var(--ink)}
+  .hero-h1 em{font-style:italic;color:var(--leaf)}
+  .hero-lead p{color:var(--muted);font-size:16px;line-height:1.7;margin:18px 0 26px;max-width:430px}
+  .hero-actions{display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
+  .scroll-cue{display:none;position:absolute;bottom:20px;left:50%;transform:translateX(-50%);z-index:8;font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:var(--muted);flex-direction:column;align-items:center;gap:8px}
+  .scroll-cue span{width:1px;height:40px;background:linear-gradient(var(--sage),transparent);animation:cue 2s ease-in-out infinite}
+  @keyframes cue{0%,100%{opacity:.3;transform:scaleY(.6)}50%{opacity:1;transform:scaleY(1)}}
+  @media(max-width:860px){
+    .jar-pos{top:36%;width:min(240px,58vw)}.smear-pos{top:37%;width:min(520px,96vw)}.glow{top:37%;width:min(520px,96vw)}
+    .aloel-pos{width:min(300px,58vw)}.aloer-pos{width:min(280px,54vw)}
+    .hero-lead{bottom:5%}
+  }
+
+  /* ===== showcase: pinned jar + ingredients fly in (like the reference) ===== */
+  .showcase{position:relative;min-height:100vh;padding:70px 0;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;
+    background:linear-gradient(180deg,#e7f2ec 0%,#d3e9de 55%,#e2f0e9 100%)}
+  .showcase .ghost2{top:56%;color:rgba(47,93,58,.09)}
+  .sc-head{position:relative;z-index:5;text-align:center;margin-bottom:14px}
+  .sc-head .eyebrow{color:var(--leaf)}
+  .sc-head h2{font-family:var(--serif);font-weight:500;font-size:clamp(26px,3.4vw,44px);margin-top:8px;letter-spacing:-.01em}
+  .sc-sticky{position:relative;width:100%;max-width:1120px;height:min(620px,74vh);margin:0 auto}
+  .sc-jarwrap{position:absolute;left:50%;top:43%;transform:translate(-50%,-50%);width:min(330px,46vw);z-index:3}
+  .sc-jar{width:100%;display:block;filter:drop-shadow(0 46px 52px rgba(31,63,42,.36))}
+  .sc-item{position:absolute;width:220px;z-index:4;opacity:0}
+  .sc-item .ic{width:100px;height:100px;border-radius:50%;display:grid;place-items:center;margin-bottom:12px;background:transparent;border:1.5px solid rgba(47,93,58,.3);padding:16px}
+  .sc-item .ic img{width:100%;height:100%;object-fit:contain}
+  .sc-item h3{font-size:17px;margin-bottom:5px}
+  .sc-item p{color:var(--muted);font-size:12.5px;line-height:1.5}
+  .ic.c-green svg{stroke:#3f7d52}.ic.c-teal svg{stroke:#2f8f8f}.ic.c-gold svg{stroke:#c79a3a}.ic.c-cream svg{stroke:#b08a5a}.ic.c-blue svg{stroke:#3f7dc0}
+  .p1{left:2%;top:20%;text-align:right}.p1 .ic{margin-left:auto}
+  .p3{left:2%;top:56%;text-align:right}.p3 .ic{margin-left:auto}
+  .p4{left:50%;top:78%;transform:translateX(-50%);text-align:center;width:260px}.p4 .ic{margin:0 auto 12px}
+  .p2{right:2%;top:20%;text-align:left}
+  .p5{right:2%;top:56%;text-align:left}
+  @media(max-width:820px){
+    .showcase{height:auto;padding:90px 0}.sc-sticky{position:static;height:auto;display:grid;grid-template-columns:1fr 1fr;gap:24px 18px;max-width:640px;margin:0 auto;padding:0 24px}
+    .sc-head{position:static;grid-column:1/-1;margin-bottom:6px}.showcase .ghost2{display:none}
+    .sc-jar{position:static;transform:none;grid-column:1/-1;margin:0 auto;width:min(200px,46vw)}
+    .sc-item{position:static!important;width:auto;text-align:left!important;transform:none!important;opacity:1!important}
+    .sc-item .ic{margin-left:0!important}
+  }
+
+  /* ===== benefits ===== */
+  .benefits{padding:130px 0;background:var(--bg)}
+  .benefits .grid{display:grid;grid-template-columns:1fr 1fr;gap:70px;align-items:center}
+  .ben-head{margin-bottom:40px}
+  .ben-head h2{font-size:clamp(32px,4vw,50px);margin-top:16px}
+  .ben-list{display:flex;flex-direction:column;gap:14px}
+  .ben{display:flex;gap:20px;padding:22px 20px;border-radius:18px;transition:background .35s,transform .35s;align-items:flex-start;max-width:440px}
+  .ben:nth-child(even){margin-left:72px;flex-direction:row-reverse;text-align:right}
+  .ben:hover{background:var(--mint2)}
+  .ben .ic{flex:none;width:76px;height:76px;display:grid;place-items:center;transition:transform .4s}
+  .ben:hover .ic{transform:translateY(-3px) scale(1.06)}
+  .ben .ic img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 6px 9px rgba(47,93,58,.2))}
+  .ben h3{font-size:20px;margin-bottom:5px}
+  .ben p{color:var(--muted);font-size:14px;line-height:1.6}
+  .ben-visual{position:relative;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 40% 35%,#eaf4ee,#bfe0cf 70%,#9dc7ac);
+    display:grid;place-items:center;overflow:hidden}
+  .ben-visual{overflow:hidden}
+  .ben-photo{width:100%;height:100%;object-fit:cover;border-radius:50%}
+
+  /* ===== ritual steps ===== */
+  .ritual{padding:130px 0;background:var(--mint2)}
+  .ritual .head{text-align:center;margin-bottom:60px}
+  .ritual h2{font-size:clamp(32px,4vw,50px);margin-top:14px}
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:30px;counter-reset:s}
+  .step{background:#fff;border-radius:22px;padding:40px 34px;position:relative;overflow:hidden;
+    box-shadow:0 12px 34px -22px rgba(31,63,42,.28);transition:transform .5s cubic-bezier(.22,1,.36,1),box-shadow .5s}
+  .step::after{content:"";position:absolute;left:0;top:0;height:4px;width:100%;background:var(--green);transform:scaleX(0);transform-origin:left;transition:transform .5s ease}
+  .step:hover{transform:translateY(-12px);box-shadow:0 42px 60px -30px rgba(31,63,42,.42)}
+  .step:hover::after{transform:scaleX(1)}
+  .step::before{counter-increment:s;content:"0" counter(s);font-family:var(--serif);font-size:74px;color:var(--mint);position:absolute;top:8px;right:22px;line-height:1;transition:color .45s}
+  .step:hover::before{color:var(--sage)}
+  .step .dot{width:14px;height:14px;border-radius:50%;background:var(--green);margin-bottom:24px;transition:transform .45s,box-shadow .45s}
+  .step:hover .dot{transform:scale(1.5);box-shadow:0 0 0 7px rgba(63,125,82,.14)}
+  .step h3{font-size:22px;margin-bottom:10px}
+  .step p{color:var(--muted);font-size:14px;line-height:1.65}
+
+  /* ===== quote ===== */
+  .reviews{padding:130px 0;background:var(--mint2)}
+  .rev-head{text-align:center;margin-bottom:54px}
+  .rev-head h2{font-size:clamp(32px,4vw,50px);margin-top:14px}
+  .rev-rating{margin-top:16px;font-size:13px;letter-spacing:.06em;color:var(--muted)}
+  .rev-rating b{color:var(--leaf);letter-spacing:3px;margin-right:8px}
+  .rev-list{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:30px}
+  .rev-card{width:90%;display:flex;gap:26px;align-items:center;border-radius:26px;padding:26px 34px;
+    background:rgba(255,255,255,.5);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.6);
+    box-shadow:0 20px 46px -28px rgba(31,63,42,.28);transition:transform .5s cubic-bezier(.22,1,.36,1),box-shadow .5s,background .4s}
+  .rev-card:hover{background:rgba(255,255,255,.68)}
+  .rev-card:nth-child(odd){align-self:flex-start}
+  .rev-card:nth-child(even){align-self:flex-end;flex-direction:row-reverse;text-align:right}
+  .rev-card:hover{transform:translateY(-8px);box-shadow:0 46px 64px -34px rgba(31,63,42,.44)}
+  .rev-avatar{flex:none;width:96px;height:96px;border-radius:50%;overflow:hidden;border:4px solid #fff;
+    box-shadow:0 12px 26px -12px rgba(31,63,42,.4),0 0 0 1px rgba(47,93,58,.12)}
+  .rev-avatar img{width:100%;height:100%;object-fit:cover;object-position:center 22%}
+  .rev-body h4{font-family:var(--serif);font-weight:600;font-size:19px;color:var(--ink);margin-bottom:4px}
+  .rev-body .stars{color:#d6a541;letter-spacing:2px;font-size:14px;margin-bottom:12px}
+  .rev-body p{color:var(--muted);font-size:14.5px;line-height:1.6}
+  @media(max-width:820px){.rev-card,.rev-card:nth-child(even),.rev-card:nth-child(odd){width:100%;align-self:auto;flex-direction:row;text-align:left}}
+
+  /* ===== cta band ===== */
+  .cta{padding:120px 0}
+  .cta .box{position:relative;overflow:hidden;background:linear-gradient(145deg,#356643,#1c3a26);color:#fff;border-radius:36px;
+    display:grid;grid-template-columns:1.06fr .94fr;gap:30px;align-items:center;padding:64px 60px}
+  .cta .box::before{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(55% 80% at 84% 34%,rgba(150,200,165,.28),transparent 60%)}
+  .cta .box .leaf{opacity:.12;filter:none;z-index:0}
+  .cta .box .leaf.a{width:240px;left:-52px;bottom:-64px;transform:rotate(20deg)}
+  .cta .box .leaf.b{width:210px;right:-34px;top:-52px;transform:rotate(-24deg) scaleX(-1)}
+  .cta-copy{position:relative;z-index:2}
+  .cta-copy .eyebrow{color:var(--sage);margin-bottom:16px}
+  .cta h2{color:#fff;font-size:clamp(32px,4vw,54px);line-height:1.02;letter-spacing:-.01em}
+  .cta p{color:rgba(234,244,238,.82);max-width:420px;margin:18px 0 28px;line-height:1.6}
+  .cta form{display:flex;gap:10px;max-width:440px}
+  .cta input{flex:1;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.32);border-radius:40px;padding:15px 22px;color:#fff;font-family:var(--sans);font-size:14px}
+  .cta input::placeholder{color:rgba(255,255,255,.6)}
+  .cta .btn.solid{background:#fff;color:var(--green)}
+  .cta .btn.solid:hover{background:var(--mint)}
+  .cta-trust{margin-top:18px;font-size:12px;letter-spacing:.03em;color:rgba(234,244,238,.62)}
+  .cta-visual{position:relative;z-index:2;display:grid;place-items:center;min-height:330px}
+  .cta-visual .glow{position:absolute;width:min(360px,86%);aspect-ratio:1;border-radius:50%;opacity:.92;
+    background:radial-gradient(circle at 45% 40%,#eaf4ee,#bfe0cf 55%,rgba(191,224,207,0) 72%)}
+  .cta-jar{position:relative;z-index:2;top:-30px;width:min(240px,62%);filter:drop-shadow(0 32px 42px rgba(0,0,0,.42))}
+  .cta-badge{position:absolute;z-index:3;top:2%;right:12%;width:100px;height:100px;border-radius:50%;background:#fff;color:var(--green);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;transform:rotate(-10deg);box-shadow:0 16px 34px -12px rgba(0,0,0,.4)}
+  .cta-badge b{font-family:var(--serif);font-size:30px;line-height:.9}
+  .cta-badge span{font-size:8.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+  @media(max-width:820px){
+    .cta .box{grid-template-columns:1fr;text-align:center;padding:52px 26px 56px}
+    .cta p{margin-left:auto;margin-right:auto}.cta form{margin:0 auto;flex-direction:column}
+    .cta-visual{order:-1;min-height:auto;margin-bottom:6px}.cta-trust{text-align:center}
+  }
+
+  /* ===== footer ===== */
+  footer{background:var(--cream);padding:80px 0 40px;color:var(--ink)}
+  footer .grid{display:grid;grid-template-columns:1.8fr 1fr 1fr;gap:40px;padding-bottom:50px;border-bottom:1px solid var(--line)}
+  footer .brand{text-align:left;font-size:24px;padding-left:0;margin-bottom:14px}
+  footer .tag{color:var(--muted);font-size:14px;line-height:1.6;max-width:260px}
+  footer h5{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:16px}
+  footer ul{list-style:none;display:flex;flex-direction:column;gap:10px}
+  footer ul a{font-size:14px;color:var(--ink);transition:color .3s}
+  footer ul a:hover{color:var(--green)}
+  footer .bottom{display:flex;justify-content:space-between;align-items:center;padding-top:26px;font-size:12px;color:var(--muted);flex-wrap:wrap;gap:12px}
+
+  @media(max-width:900px){
+    .wrap{padding:0 24px}
+    .nav-l,.nav-r a:not(.bag){display:none}
+    header .wrap{grid-template-columns:auto 1fr auto}.brand{text-align:left;padding-left:.1em}
+    .benefits .grid{grid-template-columns:1fr;gap:44px}.ben-visual{max-width:420px;margin:0 auto;width:100%}
+    .ben:nth-child(even){margin-left:0;flex-direction:row;text-align:left}
+    .ing-grid{grid-template-columns:1fr 1fr}
+    .steps{grid-template-columns:1fr}
+    .cta .box{padding:56px 28px}.cta form{flex-direction:column}
+    footer .grid{grid-template-columns:1fr 1fr}
+  }
+  @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.reveal{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+
+<!-- reusable SVG assets -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="jarG" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#4f9c63"/><stop offset="1" stop-color="#1f4a2c"/>
+    </linearGradient>
+    <linearGradient id="lidG" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#c9d4cd"/><stop offset="1" stop-color="#8a988f"/>
+    </linearGradient>
+    <linearGradient id="leafG" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#5aa871"/><stop offset="1" stop-color="#2c6b3f"/>
+    </linearGradient>
+    <symbol id="jar" viewBox="0 0 200 220">
+      <ellipse cx="100" cy="205" rx="70" ry="12" fill="rgba(31,63,42,.18)"/>
+      <rect x="34" y="70" width="132" height="128" rx="26" fill="url(#jarG)"/>
+      <rect x="34" y="70" width="132" height="128" rx="26" fill="none" stroke="rgba(255,255,255,.18)" stroke-width="1"/>
+      <ellipse cx="70" cy="120" rx="16" ry="40" fill="rgba(255,255,255,.14)"/>
+      <rect x="44" y="30" width="112" height="52" rx="14" fill="url(#lidG)"/>
+      <rect x="44" y="30" width="112" height="52" rx="14" fill="none" stroke="rgba(255,255,255,.4)" stroke-width="1"/>
+      <rect x="60" y="118" width="80" height="2.4" rx="1" fill="rgba(255,255,255,.7)"/>
+      <text x="100" y="150" text-anchor="middle" font-family="Georgia,serif" font-size="15" letter-spacing="3" fill="rgba(255,255,255,.92)">SÈVE</text>
+      <text x="100" y="168" text-anchor="middle" font-family="Inter,sans-serif" font-size="7.5" letter-spacing="2.4" fill="rgba(255,255,255,.7)">SKIN · NOURISH</text>
+    </symbol>
+    <symbol id="aloe" viewBox="0 0 120 200">
+      <g fill="url(#leafG)" stroke="rgba(255,255,255,.25)" stroke-width="1">
+        <path d="M60 200 C40 150 34 80 52 8 C58 40 60 120 60 200 Z"/>
+        <path d="M60 200 C82 148 96 90 108 20 C96 56 74 130 60 200 Z"/>
+        <path d="M60 200 C36 150 20 96 10 30 C24 66 48 132 60 200 Z"/>
+      </g>
+    </symbol>
+  </defs>
+</svg>
+
+<div class="topbar">Free shipping over $60 · Cruelty-free botanicals · Made with real aloe</div>
+
+<header id="hdr">
+  <div class="wrap">
+    <nav class="nav-l"><a href="#shop">Shop</a><a href="#benefits">Benefits</a><a href="#ritual">Ritual</a></nav>
+    <div class="brand">SÈVE</div>
+    <nav class="nav-r"><a href="#reviews">Reviews</a><a href="#cta">Get 10% off</a></nav>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero" id="top">
+  <canvas class="dew" id="dew"></canvas>
+  <div class="ghostword" id="ghostWord">NOURISH</div>
+  <div class="stage" id="stage">
+    <div class="glow" data-d="6"></div>
+    <div class="pos smear-pos" data-d="9"><img src="gel.png" alt=""></div>
+    <div class="pos leaf-pos" data-d="16"><video class="leaf-vid" autoplay muted loop playsinline><source src="leaf.webm" type="video/webm"></video></div>
+    <div class="pos jar-pos" data-d="12"><img src="jar.png" alt="SÈVE aloe cream jar"></div>
+  </div>
+  <div class="hero-scrim"></div>
+  <div class="hero-lead">
+    <div class="wrap">
+      <h1 class="hero-h1" id="heroH1">Straight from<br>the <em>leaf</em>.</h1>
+      <p>Raw aloe, cold-pressed into a featherlight balm — 72 hours of calm, quenched, dewy skin.</p>
+      <div class="hero-actions">
+        <a href="#shop" class="btn solid">Shop the ritual</a>
+        <a href="#benefits" class="btn ghost">Why aloe →</a>
+      </div>
+    </div>
+  </div>
+  <div class="scroll-cue">Scroll<span></span></div>
+</section>
+
+<!-- SHOWCASE: pinned jar, ingredients fly in around it on scroll -->
+<section class="showcase" id="shop">
+  <div class="ghostword ghost2">NOURISH</div>
+  <div class="sc-head">
+    <span class="eyebrow">The formula</span>
+    <h2>SÈVE Skin Nourish</h2>
+  </div>
+  <div class="sc-sticky">
+    <div class="sc-jarwrap"><img class="sc-jar" src="jar.png" alt="SÈVE Skin Nourish jar"></div>
+    <div class="sc-item p1"><div class="ic"><img src="ing-aloe.png" alt=""></div><h3>Aloe Vera Extract</h3><p>Deep hydration that soothes irritation and helps skin heal.</p></div>
+    <div class="sc-item p2"><div class="ic"><img src="ing-squalane.png" alt=""></div><h3>Squalane</h3><p>Locks in moisture and restores a soft, supple barrier.</p></div>
+    <div class="sc-item p3"><div class="ic"><img src="ing-vitamine.png" alt=""></div><h3>Vitamin E</h3><p>An antioxidant shield against daily environmental stress.</p></div>
+    <div class="sc-item p4"><div class="ic"><img src="ing-shea.png" alt=""></div><h3>Shea Butter</h3><p>A rich emollient for a smooth, cushioned, nourished finish.</p></div>
+    <div class="sc-item p5"><div class="ic"><img src="ing-greentea.png" alt=""></div><h3>Green Tea</h3><p>Calming polyphenols that comfort reactive, stressed skin.</p></div>
+  </div>
+</section>
+
+<!-- BENEFITS -->
+<section class="benefits" id="benefits">
+  <div class="wrap">
+    <div class="grid">
+      <div>
+        <div class="ben-head reveal">
+          <div class="eyebrow">Why it works</div>
+          <h2>Calm, quenched,<br>glowing skin.</h2>
+        </div>
+        <div class="ben-list">
+          <div class="ben reveal">
+            <div class="ic"><img src="icon-hydration.png" alt=""></div>
+            <div><h3>Deep Hydration</h3><p>Aloe polysaccharides pull moisture into the skin and lock it there for up to 72 hours.</p></div>
+          </div>
+          <div class="ben reveal">
+            <div class="ic"><img src="icon-soothe.png" alt=""></div>
+            <div><h3>Soothes Irritated Skin</h3><p>Cools redness and calms reactive, sensitive skin after sun, shaving or a long day.</p></div>
+          </div>
+          <div class="ben reveal">
+            <div class="ic"><img src="icon-heal.png" alt=""></div>
+            <div><h3>Promotes Skin Healing</h3><p>Enzymes and amino acids support the skin barrier and speed up natural repair.</p></div>
+          </div>
+          <div class="ben reveal">
+            <div class="ic"><img src="icon-antiox.png" alt=""></div>
+            <div><h3>Rich in Antioxidants</h3><p>Vitamins C &amp; E defend against pollution and everyday environmental stress.</p></div>
+          </div>
+        </div>
+      </div>
+      <div class="ben-visual reveal">
+        <img class="ben-photo" src="hand.jpg" alt="Hand holding the SÈVE jar">
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- RITUAL -->
+<section class="ritual" id="ritual">
+  <div class="wrap">
+    <div class="head reveal">
+      <div class="eyebrow">The ritual</div>
+      <h2>Three quiet minutes.</h2>
+    </div>
+    <div class="steps">
+      <div class="step"><div class="dot"></div><h3>Cleanse</h3><p>Start with clean, damp skin so the aloe absorbs fully and evenly.</p></div>
+      <div class="step"><div class="dot"></div><h3>Nourish</h3><p>Warm a pea-size amount and press it in — cheeks, forehead, neck.</p></div>
+      <div class="step"><div class="dot"></div><h3>Glow</h3><p>Let it sink in. Wear alone or under SPF for all-day comfort.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- REVIEWS -->
+<section class="reviews" id="reviews">
+  <div class="wrap">
+    <div class="rev-head reveal">
+      <div class="eyebrow">Reviews</div>
+      <h2>Loved by real skin.</h2>
+      <div class="rev-rating"><b>★★★★★</b>4.9 average · 2,400+ verified reviews</div>
+    </div>
+    <div class="rev-list">
+      <div class="rev-card"><div class="rev-avatar"><img src="rev1.jpg" alt="Maya R."></div><div class="rev-body"><h4>Maya R.</h4><div class="stars">★★★★★</div><p>My skin has never felt this calm. It's the one step I never skip now.</p></div></div>
+      <div class="rev-card"><div class="rev-avatar"><img src="rev2.jpg" alt="Elena K."></div><div class="rev-body"><h4>Elena K.</h4><div class="stars">★★★★★</div><p>Two weeks in and the dry patches on my cheeks are just gone. Completely obsessed.</p></div></div>
+      <div class="rev-card"><div class="rev-avatar"><img src="rev3.jpg" alt="Priya S."></div><div class="rev-body"><h4>Priya S.</h4><div class="stars">★★★★★</div><p>Lightweight, sinks in fast, no sticky residue — finally a balm my oily skin loves.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta" id="cta">
+  <div class="wrap">
+    <div class="box reveal">
+      <svg class="leaf a"><use href="#aloe"/></svg>
+      <svg class="leaf b"><use href="#aloe"/></svg>
+      <div class="cta-copy">
+        <div class="eyebrow">Members get more</div>
+        <h2>Start your<br>aloe ritual.</h2>
+        <p>Join the list for 10% off your first jar and early access to every new botanical.</p>
+        <form onsubmit="return false">
+          <input type="email" placeholder="Your email" aria-label="Your email">
+          <button class="btn solid" type="submit">Get 10% off</button>
+        </form>
+        <div class="cta-trust">Free shipping over $60 · Cancel anytime · No spam, ever.</div>
+      </div>
+      <div class="cta-visual">
+        <div class="glow"></div>
+        <img class="cta-jar" src="jar.png" alt="SÈVE Skin Nourish jar">
+        <div class="cta-badge"><span>Save</span><b>10%</b><span>1st order</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="wrap">
+    <div class="grid">
+      <div>
+        <div class="brand">SÈVE</div>
+        <div class="tag">Aloe-first skincare, made in small batches. Clean, vegan and endlessly kind to skin.</div>
+      </div>
+      <div><h5>Explore</h5><ul><li><a href="#shop">Skin Nourish</a></li><li><a href="#benefits">Ingredients</a></li></ul></div>
+      <div><h5>Discover</h5><ul><li><a href="#ritual">The ritual</a></li><li><a href="#reviews">Reviews</a></li></ul></div>
+    </div>
+    <div class="bottom">
+      <span>© 2026 SÈVE Botanicals. All rights reserved.</span>
+      <span>Mock design by Alvina</span>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script>
+gsap.registerPlugin(ScrollTrigger);
+
+/* header solid on scroll */
+addEventListener('scroll',()=>{document.getElementById('hdr').classList.toggle('scrolled',scrollY>40);},{passive:true});
+
+/* ===== hero: cinematic intro ===== */
+/* product scene is static (no separate fly-in); only a soft unified fade + the jar levitates */
+gsap.from('.stage',{opacity:0,duration:1.1,ease:'power2.out'});
+const hero=gsap.timeline({defaults:{ease:'power3.out'},delay:.2});
+hero.from('#heroH1',{opacity:0,y:28,clipPath:'inset(0 0 100% 0)',duration:.9})
+    .from('.hero-lead p',{opacity:0,y:18,duration:.6},'-=.5')
+    .fromTo('.hero-actions .btn',{opacity:0,y:16},{opacity:1,y:0,stagger:.1,duration:.55},'-=.4');
+
+/* jar stays static; the aloe leaf gel-drip is now a looping video (leaf.mp4) */
+
+/* ===== showcase: ingredients reveal in a circle around the jar (clockwise), on scroll ===== */
+(function(){
+  const items=gsap.utils.toArray('.sc-item');
+  // clockwise order: top-left, top-right, mid-right, bottom, mid-left
+  const cw=['.p1','.p2','.p5','.p4','.p3'].map(s=>document.querySelector(s)).filter(Boolean);
+  const jar=document.querySelector('.sc-jar');
+  gsap.set(items,{opacity:0,scale:.5,y:12});
+  gsap.set(jar,{opacity:0,yPercent:-160,scale:.94});
+  // IntersectionObserver = reliable replay from either scroll direction
+  let shown=false;
+  new IntersectionObserver(es=>es.forEach(e=>{
+    if(!shown && e.isIntersecting && e.intersectionRatio>=0.35){
+      shown=true;
+      gsap.to(jar,{opacity:1,yPercent:0,scale:1,duration:1,ease:'bounce.out',overwrite:true});
+      gsap.to(cw,{opacity:1,scale:1,y:0,duration:.6,ease:'back.out(1.7)',stagger:.12,delay:.55,overwrite:true});
+    } else if(shown && !e.isIntersecting){
+      shown=false;
+      gsap.set(items,{opacity:0,scale:.5,y:12});
+      gsap.set(jar,{opacity:0,yPercent:-160,scale:.94});
+    }
+  }),{threshold:[0,0.35]}).observe(document.querySelector('.showcase'));
+})();
+
+/* ===== ritual cards: sequential rise-in (01→02→03), replays ===== */
+(function(){
+  const steps=gsap.utils.toArray('.step'); if(!steps.length) return;
+  gsap.set(steps,{opacity:0,y:44});
+  let shown=false;
+  new IntersectionObserver(es=>es.forEach(e=>{
+    if(!shown && e.isIntersecting && e.intersectionRatio>=0.2){shown=true;gsap.to(steps,{opacity:1,y:0,duration:.7,ease:'power3.out',stagger:.18,overwrite:true});}
+    else if(shown && !e.isIntersecting){shown=false;gsap.set(steps,{opacity:0,y:44});}
+  }),{threshold:[0,0.2]}).observe(document.querySelector('.ritual'));
+})();
+
+/* ===== review cards: staggered reveal, replays ===== */
+(function(){
+  const cards=gsap.utils.toArray('.rev-card'); if(!cards.length) return;
+  gsap.set(cards,{opacity:0,y:40,scale:.96});
+  let shown=false;
+  new IntersectionObserver(es=>es.forEach(e=>{
+    if(!shown && e.isIntersecting && e.intersectionRatio>=0.15){shown=true;gsap.to(cards,{opacity:1,y:0,scale:1,duration:.6,ease:'power3.out',stagger:.09,overwrite:true});}
+    else if(shown && !e.isIntersecting){shown=false;gsap.set(cards,{opacity:0,y:40,scale:.96});}
+  }),{threshold:[0,0.15]}).observe(document.querySelector('.reviews'));
+})();
+
+/* gentle float on the CTA jar */
+gsap.to('.cta-jar',{y:-12,duration:4.5,ease:'sine.inOut',yoyo:true,repeat:-1});
+
+/* ===== hero: mouse parallax (smoothed) ===== */
+(function(){
+  const layers=[...document.querySelectorAll('.stage [data-d]')];
+  let tx=0,ty=0,cx=0,cy=0;
+  addEventListener('pointermove',e=>{tx=(e.clientX/innerWidth-.5)*2;ty=(e.clientY/innerHeight-.5)*2;},{passive:true});
+  (function loop(){cx+=(tx-cx)*.06;cy+=(ty-cy)*.06;
+    layers.forEach(l=>{const d=+l.dataset.d,f=l.dataset.flip?-1:1;
+      l.style.setProperty('--px',(cx*d*f).toFixed(1)+'px');
+      l.style.setProperty('--py',(cy*d).toFixed(1)+'px');});
+    requestAnimationFrame(loop);})();
+})();
+
+/* ===== hero: drifting dew particles ===== */
+(function(){
+  const c=document.getElementById('dew'); if(!c) return; const x=c.getContext('2d');
+  let w,h,dpr,parts;
+  function size(){dpr=Math.min(devicePixelRatio||1,2);w=c.clientWidth;h=c.clientHeight;c.width=w*dpr;c.height=h*dpr;x.setTransform(dpr,0,0,dpr,0,0);}
+  function make(){parts=Array.from({length:Math.round(w/34)},()=>({x:Math.random()*w,y:Math.random()*h,r:3+Math.random()*7,s:.12+Math.random()*.32,a:.4+Math.random()*.4,drift:(Math.random()-.5)*.15}));}
+  size();make();addEventListener('resize',()=>{size();make();},{passive:true});
+  function drop(p){
+    // aloe-gel droplet: translucent green body, refraction rim, bright lens + specular highlight
+    const r=p.r;
+    const g=x.createRadialGradient(p.x,p.y,r*.15,p.x,p.y,r);
+    g.addColorStop(0,'rgba(214,238,222,'+(p.a*.5)+')');
+    g.addColorStop(.62,'rgba(150,199,166,'+(p.a*.4)+')');
+    g.addColorStop(.9,'rgba(86,150,105,'+(p.a*.6)+')');
+    g.addColorStop(1,'rgba(86,150,105,0)');
+    x.beginPath();x.arc(p.x,p.y,r,0,7);x.fillStyle=g;x.fill();
+    // light passing through the drop (bright lens toward the bottom)
+    const bg=x.createRadialGradient(p.x,p.y+r*.34,0,p.x,p.y+r*.34,r*.62);
+    bg.addColorStop(0,'rgba(255,255,255,'+(p.a*.5)+')');bg.addColorStop(1,'rgba(255,255,255,0)');
+    x.beginPath();x.arc(p.x,p.y,r,0,7);x.fillStyle=bg;x.fill();
+    // crisp specular highlight, top-left
+    x.beginPath();x.arc(p.x-r*.33,p.y-r*.37,r*.2,0,7);x.fillStyle='rgba(255,255,255,'+Math.min(.95,p.a+.4)+')';x.fill();
+  }
+  (function draw(){x.clearRect(0,0,w,h);
+    parts.forEach(p=>{p.y-=p.s;p.x+=p.drift;if(p.y<-10){p.y=h+10;p.x=Math.random()*w;}drop(p);});
+    requestAnimationFrame(draw);})();
+})();
+
+/* generic reveals — replay from either direction, never blank on the way down */
+gsap.utils.toArray('.reveal').forEach(el=>{
+  gsap.fromTo(el,{opacity:0,y:28},{opacity:1,y:0,duration:.9,ease:'power3.out',
+    scrollTrigger:{trigger:el,start:'top 88%',toggleActions:'restart none restart reverse'}});
+});
+</script>
+</body>
+</html>
